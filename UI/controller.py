@@ -21,8 +21,21 @@ class Controller:
             self._view.ddcountry.options.append(ft.dropdown.Option(stato))
 
     def handle_graph(self, e):
-        pass
-
+        stato = self._view.ddcountry.value
+        if stato is None:
+            self._view.create_alert(f"Selezionare uno stato!")
+            self._view.update_page()
+            return
+        anno = self._view.ddyear.value
+        if anno is None:
+            self._view.create_alert(f"Selezionare un anno!")
+            self._view.update_page()
+            return
+        self._model.buildGraph(stato, anno)
+        self._view.txt_result.controls.clear()
+        self._view.txt_result.controls.append(ft.Text(f"Il grafo è stato creato correttamente."))
+        self._view.txt_result.controls.append(ft.Text(f"Numero di vertici: {self._model.getNumNodes()}, numero di archi: {self._model.getNumEdges()}"))
+        self._view.update_page()
 
 
     def handle_volume(self, e):

@@ -38,25 +38,28 @@ class DAO():
         return result
 
     @staticmethod
-    def getEdges():
+    def getEdge(anno, retailer_01: Go_retailers, retailer_02: Go_retailers):
         conn = DBConnect.get_connection()
         cursor = conn.cursor(dictionary=True)
-        result = []
-        query = """select t3.R1, t3.R2, COUNT(distinct(t3.Product_number))
+        query = """select t3.R1, t3.R2, COUNT(distinct(t3.Product_number)) as peso
                 from (
                 select t1.Retailer_code as R1, t2.Retailer_code as R2, t1.Product_number
                 from ((select *
                 from go_daily_sales gds1
-                where gds1.Retailer_code = 1133 and year(gds1.`Date`)=2015) t1
+                where gds1.Retailer_code = %s and year(gds1.`Date`)=%s) t1
                 inner join
                 (select *
                 from go_daily_sales gds2
-                where gds2.Retailer_code = 1135 and year(gds2.`Date`)=2015) t2
+                where gds2.Retailer_code = %s and year(gds2.`Date`)=%s) t2
                 on t1.Product_number = t2.Product_number)) t3
                 group by t3.R1, t3.R2"""
-        cursor.execute(query, (stato,))
-        for row in cursor:
-            result.append(Go_retailers(**row))
+        cursor.execute(query, (retailer_01.Retailer_code, anno, retailer_02.Retailer_code, anno,))
+        row = cursor.fetchone()
+        if row is None:
+            cursor.close()
+            conn.close()
+            return None
+        arco = (row["R1"], row["R2"], row["peso"])
         cursor.close()
         conn.close()
-        return result
+        return arco
