@@ -31,3 +31,18 @@ class Model:
 
     def getNumEdges(self):
         return self._graph.number_of_edges()
+
+    def getEdgesAdjacent(self):
+        result = []
+        for node in self._graph.nodes:
+            archiAdiacenti = self._graph.edges(node, data=True)
+            if archiAdiacenti != []:
+                sommaPesi = 0
+                for arco in archiAdiacenti:
+                    sommaPesi = sommaPesi + arco[2]["weight"]
+                if sommaPesi != 0 and node is not None:
+                    result.append((node, sommaPesi))
+        result.sort(key=lambda x:x[1], reverse=True)
+        return result
+
+

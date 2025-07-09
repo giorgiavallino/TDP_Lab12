@@ -21,6 +21,7 @@ class Controller:
             self._view.ddcountry.options.append(ft.dropdown.Option(stato))
 
     def handle_graph(self, e):
+        self._view.txtOut2.controls.clear()
         stato = self._view.ddcountry.value
         if stato is None:
             self._view.create_alert(f"Selezionare uno stato!")
@@ -32,15 +33,18 @@ class Controller:
             self._view.update_page()
             return
         self._model.buildGraph(stato, anno)
+        self._view.btn_volume.disabled = False
         self._view.txt_result.controls.clear()
         self._view.txt_result.controls.append(ft.Text(f"Il grafo è stato creato correttamente."))
         self._view.txt_result.controls.append(ft.Text(f"Numero di vertici: {self._model.getNumNodes()}, numero di archi: {self._model.getNumEdges()}"))
         self._view.update_page()
 
-
     def handle_volume(self, e):
-        pass
-
+        self._view.txtOut2.controls.clear()
+        result = self._model.getEdgesAdjacent()
+        for element in result:
+            self._view.txtOut2.controls.append(ft.Text(f"{element[0]} - {element[1]}"))
+        self._view.update_page()
 
     def handle_path(self, e):
         pass
